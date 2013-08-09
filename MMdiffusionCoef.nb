@@ -1,0 +1,720 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     27294,        711]
+NotebookOptionsPosition[     26269,        670]
+NotebookOutlinePosition[     26625,        686]
+CellTagsIndexPosition[     26582,        683]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["\<\
+@User: ADAPT THIS TO YOUR NEEDS\
+\>", "Section",
+ CellChangeTimes->{{3.5848545823147907`*^9, 3.5848545998729773`*^9}, {
+  3.584854852822504*^9, 3.584854853876236*^9}, {3.584988458766921*^9, 
+  3.5849884748502293`*^9}, {3.585029146642891*^9, 3.585029150560636*^9}}],
+
+Cell[BoxData[{
+ StyleBox[
+  RowBox[{
+   RowBox[{"howManyAtomsInCell", "=", "93"}], ";"}],
+  FontColor->RGBColor[1, 0, 0]], "\[IndentingNewLine]", 
+ RowBox[{
+  StyleBox[
+   RowBox[{
+    RowBox[{"sitestoconsider", "=", 
+     RowBox[{"Range", "[", 
+      RowBox[{"1", ",", "93"}], "]"}]}], ";"}],
+   FontColor->RGBColor[1, 0, 0]], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"numberofspecies", "=", "2"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Mg", " ", "Cl"}], "*)"}], "*)"}], 
+  StyleBox["\[IndentingNewLine]",
+   FontColor->RGBColor[1, 0, 0]], 
+  StyleBox[
+   RowBox[{
+    StyleBox[
+     RowBox[{"(", "*"}]], 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"numberofsitesofspecies", "[", "#", "]"}], "&"}], 
+       StyleBox[
+        RowBox[{"/", "@"}]], 
+       RowBox[{"Range", "@", "numberofspecies"}]}], "=", 
+      RowBox[{"{", 
+       RowBox[{"62", ",", "31"}], "}"}]}], ";"}], 
+    StyleBox[
+     RowBox[{"*", ")"}]]}],
+   FontColor->RGBColor[1, 0, 0]], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "remember", " ", "first", " ", "timestep", " ", "has", " ", "index", " ", 
+     "1"}], ",", " ", 
+    RowBox[{"not", " ", "0"}]}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"allsites", "=", 
+   RowBox[{"Range", "@", "howManyAtomsInCell"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sitesCl", "=", 
+   RowBox[{"Range", "@", "62"}]}], ";", " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "remember", " ", "that", " ", "species", " ", "have", " ", "not", " ", 
+    "same", " ", "rlistcutoff"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"sitesMg", "=", 
+   RowBox[{"Range", "[", 
+    RowBox[{"63", ",", "93"}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.5849873862504272`*^9, 3.584987386599016*^9}, {
+  3.584988657435589*^9, 3.584988713586474*^9}, {3.585031377233552*^9, 
+  3.585031660467558*^9}, {3.585032202717739*^9, 3.585032214793305*^9}, {
+  3.5850322521996326`*^9, 3.5850322770572844`*^9}, {3.585032805526535*^9, 
+  3.585032844319442*^9}, {3.5850329696650963`*^9, 3.5850329929988527`*^9}, {
+  3.585033370239828*^9, 3.585033371963583*^9}, {3.5850334094810677`*^9, 
+  3.585033414368332*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Extract positions from PIMAIM dumps", "Section",
+ CellChangeTimes->{{3.5848546198114367`*^9, 3.584854630335833*^9}, {
+  3.5849883694562387`*^9, 3.584988448339366*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Clear", "[", "positions", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"positions", "=", "\[IndentingNewLine]", 
+   RowBox[{
+   "Import", "[", 
+    "\"\</home/levesque/Recherche/Sels-Fondus/MgCl2/mgcl2-inputs/\
+cageCorrelationFunctions/big/positions.out\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"nbTimeSteps", "=", 
+    FractionBox[
+     RowBox[{"Length", "@", "positions"}], "howManyAtomsInCell"]}], ";"}], 
+  " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "nb", " ", "of", " ", "dumps", " ", "in", " ", "the", " ", "file"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"coo", "[", 
+    RowBox[{"whatAtom_Integer", ",", " ", "whatTimestep_Integer"}], "]"}], 
+   " ", ":=", 
+   RowBox[{
+    RowBox[{"coo", "[", 
+     RowBox[{"whatAtom", ",", " ", "whatTimestep"}], "]"}], "=", " ", 
+    RowBox[{"positions", "[", 
+     RowBox[{"[", 
+      RowBox[{
+       RowBox[{"howManyAtomsInCell", "*", 
+        RowBox[{"(", 
+         RowBox[{"whatTimestep", "-", "1"}], ")"}]}], " ", "+", " ", 
+       "whatAtom"}], "]"}], "]"}]}]}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "returns", " ", "the", " ", "position", " ", "of", " ", "atom", " ", "1", 
+     " ", "at", " ", "timestep", " ", 
+     RowBox[{"t", ".", " ", "Note"}], " ", "that", " ", "1"}], "\[LessEqual]",
+     "i", "\[LessEqual]", 
+    RowBox[{"N", " ", "and", " ", "0"}], "\[LessEqual]", "t", "\[LessEqual]", 
+    "9"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"allPositionsDumpedAtTimestep", "[", "whatTimestep_Integer", "]"}], 
+  ":=", 
+  RowBox[{
+   RowBox[{"allPositionsDumpedAtTimestep", "[", "whatTimestep", "]"}], "=", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"coo", "[", 
+      RowBox[{"#", ",", "whatTimestep"}], "]"}], "&"}], "/@", 
+    RowBox[{"Range", "[", "howManyAtomsInCell", "]"}], " ", 
+    RowBox[{"(*", " ", 
+     RowBox[{"set", " ", "of", " ", "all", " ", 
+      RowBox[{"(", "93", ")"}], " ", "positions", " ", "vectors", " ", "at", 
+      " ", "time", " ", "t"}], " ", "*)"}]}]}]}]}], "Input",
+ CellChangeTimes->{{3.584775651297534*^9, 3.5847757566738377`*^9}, {
+   3.5847817367909718`*^9, 3.5847817369696617`*^9}, {3.5847875659961863`*^9, 
+   3.584787602771966*^9}, {3.584787655108725*^9, 3.5847876651335487`*^9}, {
+   3.584787772880096*^9, 3.58478777301998*^9}, {3.5848118201948957`*^9, 
+   3.584811827232237*^9}, {3.584811973912369*^9, 3.5848119759918003`*^9}, {
+   3.584812131019676*^9, 3.584812145909112*^9}, {3.5848533455622473`*^9, 
+   3.584853407253162*^9}, {3.584853921080448*^9, 3.584853957644278*^9}, {
+   3.5848539916830387`*^9, 3.584854024623516*^9}, {3.584854062764303*^9, 
+   3.5848541263767853`*^9}, {3.584854573434794*^9, 3.58485457372514*^9}, {
+   3.5848549115483513`*^9, 3.5848549131935453`*^9}, {3.5848549476450453`*^9, 
+   3.584854948358803*^9}, {3.58485500631446*^9, 3.5848550260904207`*^9}, {
+   3.58485514209254*^9, 3.584855151903268*^9}, {3.584855321113858*^9, 
+   3.584855326415526*^9}, {3.584855357553398*^9, 3.5848553576638412`*^9}, {
+   3.58485558794621*^9, 3.584855623613264*^9}, {3.584869711082445*^9, 
+   3.584869711164735*^9}, {3.584945859644555*^9, 3.584945869619155*^9}, {
+   3.5849563478595753`*^9, 3.58495634848888*^9}, {3.58496269004633*^9, 
+   3.5849627316465397`*^9}, {3.584987989753351*^9, 3.58498799662503*^9}, {
+   3.5850296855474873`*^9, 3.5850296857581663`*^9}, 3.585029718822198*^9, {
+   3.585029770251062*^9, 3.585029784691464*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Lists of neighbours to which apply functions flist", "Section",
+ CellChangeTimes->{{3.584855191909601*^9, 3.5848552131630077`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Module", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"rlistcutoff", "=", "7"}], 
+    RowBox[{"(*", " ", "Bohr", " ", "*)"}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"list", "[", 
+      RowBox[{"whatAtom_Integer", ",", "whatTimestep_Integer"}], "]"}], ":=", 
+     
+     RowBox[{
+      RowBox[{"list", "[", 
+       RowBox[{"whatAtom", ",", "whatTimestep"}], "]"}], "=", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"HeavisideTheta", "[", 
+         RowBox[{"rlistcutoff", "-", 
+          RowBox[{"EuclideanDistance", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+             "allPositionsDumpedAtTimestep", "[", "whatTimestep", "]"}], "[", 
+             
+             RowBox[{"[", "#", "]"}], "]"}], ",", 
+            RowBox[{"coo", "[", 
+             RowBox[{"whatAtom", ",", "whatTimestep"}], "]"}]}], "]"}]}], 
+         "]"}], "&"}], "/@", 
+       RowBox[{"Range", "[", "howManyAtomsInCell", "]"}]}]}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"listCF", "[", 
+      RowBox[{"sites_List", ",", "dt_Integer"}], "]"}], ":=", 
+     RowBox[{
+      RowBox[{"listCF", "[", 
+       RowBox[{"sites", ",", "dt"}], "]"}], "=", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Mean", "@", 
+        RowBox[{"Flatten", "@", 
+         RowBox[{"Outer", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"list", "[", 
+              RowBox[{"#", ",", "#2"}], "]"}], ".", 
+             RowBox[{"list", "[", 
+              RowBox[{"#", ",", 
+               RowBox[{"#2", "+", "dt"}]}], "]"}]}], "&"}], ",", 
+           RowBox[{"Range", "@", "sites"}], ",", 
+           RowBox[{"Range", "@", 
+            RowBox[{"(", 
+             RowBox[{"nbTimeSteps", "-", "dt"}], ")"}]}]}], "]"}]}]}], "/", 
+       RowBox[{"Mean", "@", 
+        RowBox[{"Flatten", "@", 
+         RowBox[{"Outer", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"list", "[", 
+              RowBox[{"#", ",", "#2"}], "]"}], ".", 
+             RowBox[{"list", "[", 
+              RowBox[{"#", ",", "#2"}], "]"}]}], "&"}], ",", 
+           RowBox[{"Range", "@", "sites"}], ",", 
+           RowBox[{"Range", "@", "nbTimeSteps"}]}], "]"}]}]}]}]}]}], ";"}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.584798277837879*^9, 3.5847983521307573`*^9}, {
+   3.584798397136073*^9, 3.584798407655828*^9}, {3.584798457637199*^9, 
+   3.584798457916801*^9}, {3.584798586085824*^9, 3.584798616474936*^9}, {
+   3.584813625470257*^9, 3.584813640749192*^9}, {3.5848556726419373`*^9, 
+   3.584855720171245*^9}, {3.584869943185094*^9, 3.5848699628576593`*^9}, {
+   3.58487014134527*^9, 3.58487014327977*^9}, {3.584878943807732*^9, 
+   3.5848789747209883`*^9}, {3.5849882526736813`*^9, 3.584988256118691*^9}, {
+   3.5849887757054977`*^9, 3.584988776705966*^9}, {3.585029454243025*^9, 
+   3.585029503100157*^9}, 3.5850296859623957`*^9, 3.58502978936337*^9, {
+   3.585029963050078*^9, 3.585030004828858*^9}, {3.5850300349897223`*^9, 
+   3.585030035159884*^9}, {3.585030191747776*^9, 3.5850302190281076`*^9}, {
+   3.585030305847793*^9, 3.58503034616236*^9}, {3.585030483728921*^9, 
+   3.585030491161001*^9}, {3.5850305234083853`*^9, 3.585030525870002*^9}, {
+   3.585031875099415*^9, 3.585031875351522*^9}, {3.585031932369995*^9, 
+   3.58503196478207*^9}, {3.5850320338335257`*^9, 3.585032070112625*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ListPlot", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"#", ",", 
+        RowBox[{"listCF", "[", 
+         RowBox[{"allsites", ",", "#"}], "]"}]}], "}"}], "&"}], "/@", 
+     RowBox[{"Range", "[", 
+      RowBox[{"0", ",", "10"}], "]"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{"PlotStyle", "\[Rule]", 
+     RowBox[{"{", 
+      RowBox[{"Black", ",", 
+       RowBox[{"PointSize", "[", "0.02", "]"}]}], "}"}]}], ",", 
+    RowBox[{"PlotRange", "\[Rule]", "All"}], ",", 
+    RowBox[{"Frame", "\[Rule]", "True"}], ",", 
+    RowBox[{"FrameLabel", "\[Rule]", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<t (PIMAIM dump period)\>\"", ",", 
+       "\"\<\!\(\*Cell[TextData[Cell[BoxData[
+FormBox[
+RowBox[{
+SubscriptBox[\"C\", \"l\"], \"(\", \"t\", \")\"}], \
+TraditionalForm]]]]]\)\>\""}], "}"}]}]}], "]"}], 
+  "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.584869560617609*^9, 3.5848695946484137`*^9}, 
+   3.5848697762019863`*^9, {3.584870817240138*^9, 3.584870844187932*^9}, 
+   3.584870883551462*^9, {3.584870914743078*^9, 3.584870920461537*^9}, 
+   3.584871403976362*^9, {3.5848725692893257`*^9, 3.584872569355936*^9}, {
+   3.584880948189136*^9, 3.5848811149049387`*^9}, {3.584881206538479*^9, 
+   3.584881226690879*^9}, {3.5848813489545507`*^9, 3.584881365261932*^9}, {
+   3.584881433727419*^9, 3.584881440279374*^9}, {3.584881475887306*^9, 
+   3.584881523970708*^9}, {3.584881609334751*^9, 3.5848816135703087`*^9}, 
+   3.58488176273945*^9, {3.584883045528857*^9, 3.5848830523881903`*^9}, {
+   3.584883117987438*^9, 3.5848831523350286`*^9}, {3.584883677427854*^9, 
+   3.584883698823476*^9}, {3.58488376198848*^9, 3.584883775031147*^9}, {
+   3.5849457913701563`*^9, 3.584945810207697*^9}, {3.585030631603167*^9, 
+   3.5850306739944773`*^9}, {3.58503199580177*^9, 3.585031996979941*^9}, 
+   3.5850321179353*^9, {3.585032362497511*^9, 3.5850323874277363`*^9}, {
+   3.585032420715288*^9, 3.5850324362761717`*^9}, {3.585032471269432*^9, 
+   3.585032477409657*^9}, {3.5850325515898113`*^9, 3.585032554997693*^9}, {
+   3.585033431003358*^9, 3.585033433224928*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {GrayLevel[0], PointSize[0.02], 
+    PointBox[{{0., 1.}, {1., 0.7896454243465622}, {2., 0.7522302323651747}, {
+     3., 0.7326458403539899}, {4., 0.7101196737874462}, {5., 
+     0.6972823524801919}, {6., 0.6855545946268333}, {7., 
+     0.6769206450045414}, {8., 0.6662540620039236}, {9., 
+     0.6604847423271446}, {10., 0.6504797738193034}}]}, {}},
+  AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+  Axes->True,
+  AxesOrigin->{0., 0.6504797738193034},
+  Frame->True,
+  FrameLabel->{{
+     FormBox[
+     "\"\\!\\(\\*Cell[TextData[Cell[BoxData[\\nFormBox[\\n\\n  \
+RowBox[{\\nSubscriptBox[\\\"C\\\", \\\"l\\\"], \\\"(\\\", \\\"t\\\", \
+\\\")\\\"}], \\n  TraditionalForm]]]]]\\)\"", TraditionalForm], None}, {
+     FormBox["\"t (PIMAIM dump period)\"", TraditionalForm], None}},
+  Method->{},
+  PlotRangeClipping->True]], "Output",
+ CellChangeTimes->{
+  3.584883775666933*^9, {3.5849457914927893`*^9, 3.5849458105926456`*^9}, 
+   3.584987266502717*^9, 3.584988156017033*^9, 3.584988982543145*^9, {
+   3.585030633279317*^9, 3.585030675695594*^9}, 3.58503199825311*^9, {
+   3.5850323562914047`*^9, 3.585032406193712*^9}, 3.585032448731153*^9, 
+   3.58503247932043*^9, 3.58503271265816*^9, {3.585033424678306*^9, 
+   3.5850334464251003`*^9}}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Number of atoms that have left atom i\[CloseCurlyQuote]s original neighbor \
+list at time ",
+ StyleBox["t",
+  FontSlant->"Italic"],
+ "\n",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SuperscriptBox[
+      SubscriptBox["n", "i"], "out"], "(", 
+     RowBox[{"0", ",", "t"}], ")"}], "=", 
+    RowBox[{"|", 
+     RowBox[{
+      SubscriptBox["l", "i"], "(", "0", ")"}], 
+     SuperscriptBox["|", "2"], 
+     RowBox[{
+      RowBox[{"-", 
+       RowBox[{
+        SubscriptBox["l", "i"], "(", "0", ")"}]}], "\[CenterDot]", 
+      RowBox[{
+       SubscriptBox["l", "i"], "(", "t", ")"}]}]}]}], TraditionalForm]]],
+ "\nNumber of atoms that have left between ",
+ StyleBox["t",
+  FontSlant->"Italic"],
+ " and ",
+ StyleBox["t+dt ",
+  FontSlant->"Italic"],
+ "(generalization of previous eq.)\n\n",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SuperscriptBox[
+      SubscriptBox["n", "i"], "out"], "(", 
+     RowBox[{"t", ",", 
+      RowBox[{"t", "+", "dt"}]}], ")"}], "=", 
+    RowBox[{"|", 
+     RowBox[{
+      SubscriptBox["l", "i"], "(", "t", ")"}], 
+     SuperscriptBox["|", "2"], 
+     RowBox[{
+      RowBox[{"-", 
+       RowBox[{
+        SubscriptBox["l", "i"], "(", "t", ")"}]}], "\[CenterDot]", 
+      RowBox[{
+       SubscriptBox["l", "i"], "(", 
+       RowBox[{"t", "+", "dt"}], ")"}]}]}]}], TraditionalForm]]],
+ "\n\nthat we ensemble average over time and sites:  ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["n", "out"], "=", 
+    RowBox[{"<", 
+     RowBox[{
+      SuperscriptBox[
+       SubscriptBox["n", "i"], "out"], "(", 
+      RowBox[{"t", ",", 
+       RowBox[{"t", "+", "dt"}]}], ")"}], ">"}]}], TraditionalForm]]],
+ "\n\nCage-out correlation function:  ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubsuperscriptBox["C", "cage", "out"], "(", "t", ")"}], "=", 
+    RowBox[{"\[LeftAngleBracket]", 
+     RowBox[{"\[CapitalTheta]", "(", 
+      RowBox[{"1", "-", 
+       RowBox[{
+        SuperscriptBox[
+         SubscriptBox["n", "i"], "out"], "(", "t", ")"}]}], ")"}], 
+     "\[RightAngleBracket]"}]}], TraditionalForm]]]
+}], "Section",
+ CellChangeTimes->{{3.58488065318388*^9, 3.584880737213369*^9}, {
+  3.5848807874150887`*^9, 3.584880923820137*^9}, {3.584986329681199*^9, 
+  3.5849864598368883`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Clear", "[", 
+   RowBox[{"niout", ",", "flattenedniout", ",", "nout", ",", "cageoutCF"}], 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"niout", "[", 
+   RowBox[{"site_Integer", ",", "t_Integer", ",", "dt_Integer"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"niout", "[", 
+    RowBox[{"site", ",", "t", ",", "dt"}], "]"}], "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"list", "[", 
+      RowBox[{"site", ",", "t"}], "]"}], ".", 
+     RowBox[{"list", "[", 
+      RowBox[{"site", ",", "t"}], "]"}]}], "-", 
+    RowBox[{
+     RowBox[{"list", "[", 
+      RowBox[{"site", ",", "t"}], "]"}], ".", 
+     RowBox[{"list", "[", 
+      RowBox[{"site", ",", 
+       RowBox[{"t", "+", "dt"}]}], "]"}]}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"flattenedniout", "[", "dt_Integer", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"flattenedniout", "[", "dt", "]"}], "=", 
+   RowBox[{"Flatten", "@", 
+    RowBox[{"Outer", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"niout", "[", 
+        RowBox[{"#", ",", "#2", ",", "dt"}], "]"}], "&"}], ",", 
+      StyleBox["sitestoconsider",
+       FontColor->RGBColor[1, 0, 0]], ",", 
+      RowBox[{"Range", "@", 
+       RowBox[{"(", 
+        RowBox[{"nbTimeSteps", "-", "dt"}], ")"}]}]}], 
+     "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"nout", "[", "dt_Integer", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"nout", "[", "dt", "]"}], "=", 
+   RowBox[{"Mean", "@", 
+    RowBox[{"flattenedniout", "[", "dt", "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"cageoutCF", "[", "dt_Integer", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"cageoutCF", "[", "dt", "]"}], "=", 
+   RowBox[{"Mean", "@", 
+    RowBox[{"HeavisideTheta", "[", 
+     RowBox[{"1.001", "-", 
+      RowBox[{"flattenedniout", "[", "dt", "]"}]}], "]"}]}]}]}]}], "Input",
+ CellChangeTimes->{{3.584957339675666*^9, 3.584957396220982*^9}, {
+   3.58496054994346*^9, 3.5849605539028788`*^9}, {3.584980830381604*^9, 
+   3.584980928877466*^9}, {3.5849809614507113`*^9, 3.584980990451303*^9}, {
+   3.584981023588839*^9, 3.5849810267235622`*^9}, {3.584981107788589*^9, 
+   3.5849811551792994`*^9}, {3.584981221891715*^9, 3.584981258456291*^9}, 
+   3.584981539932022*^9, {3.584981634079164*^9, 3.5849816457413483`*^9}, {
+   3.584984938088661*^9, 3.584984960605688*^9}, 3.5849849923152037`*^9, 
+   3.585033005308432*^9, {3.585033121579561*^9, 3.585033124276247*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Module", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"rangemin", "=", "0"}], ",", 
+     RowBox[{"rangemax", "=", "50"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"ListPlot", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"Monitor", "[", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"nout", "[", "#", "]"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"Row", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"ProgressIndicator", "[", 
+              RowBox[{
+               RowBox[{"Dynamic", "[", "#", "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"rangemin", ",", "rangemax"}], "}"}]}], "]"}], ",", 
+             "#"}], "}"}], ",", "\"\< /\>\""}], "]"}]}], 
+        "\[IndentingNewLine]", "]"}], "&"}], "/@", 
+      RowBox[{"Range", "[", 
+       RowBox[{"rangemin", ",", "rangemax"}], "]"}]}], "\[IndentingNewLine]", 
+     ",", 
+     RowBox[{"PlotStyle", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"Black", ",", 
+        RowBox[{"PointSize", "[", "0.02", "]"}]}], "}"}]}], ",", 
+     RowBox[{"PlotRange", "\[Rule]", "All"}], ",", 
+     RowBox[{"Frame", "\[Rule]", "True"}], ",", 
+     RowBox[{"FrameLabel", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<t (dump period of PIMAIM)\>\"", ",", 
+        "\"\<\!\(\*Cell[TextData[Cell[BoxData[
+FormBox[
+RowBox[{\"\[LeftAngleBracket]\", 
+RowBox[{
+SubsuperscriptBox[\"n\", \"i\", \"out\"], \"(\", \"t\", \")\"}], \"\
+\[RightAngleBracket]\"}], TraditionalForm]]]]]\)\>\""}], "}"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.584945120979295*^9, 3.584945157559536*^9}, {
+   3.584945199086289*^9, 3.584945248447016*^9}, {3.584945281964017*^9, 
+   3.58494529143769*^9}, {3.584945329192647*^9, 3.5849454530564632`*^9}, {
+   3.584945492480955*^9, 3.584945538117302*^9}, {3.584945569458618*^9, 
+   3.5849455787658453`*^9}, 3.584945627931572*^9, {3.5849459165258427`*^9, 
+   3.584945921496355*^9}, {3.584981881110716*^9, 3.584981924718429*^9}, {
+   3.5849865052804823`*^9, 3.584986505432993*^9}, {3.5850307320801077`*^9, 
+   3.58503073216573*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {GrayLevel[0], PointSize[0.02], PointBox[CompressedData["
+1:eJxVyV1I02EUx/F/23rxovBioI2aL6zSMUe25tK1+dub2wok1k1kdWHOUKOi
+MpxkrhxIF7kwo5GRSKGEGttaRsYuLGbRQrpSBEMKKXSFs1zrv8yy9pyLDs/h
+4XO+edWnHU4Bx3Gq1f37pydezv0/aO0zh3sKF9l9A7bZO2X2ziXmTDjzu97c
+83xnFmPKeevohakkczbUX7/NRBZ/MG9Baq6/51KKZ85FLV/b2z2WYs5H3fJT
++ejwT2YZTro6xma1y8zbcf7D7YvCnF/MBThQOWifj5DlqOko/eg7vsKsQE1J
+zNiu+c2shFTisykfkXeiirv5qbiKQ9rFKIoGFdEgeRcaB9+GFLNkFbRXQzds
+2jXMu+F/H/MWtpDVCBwTxywBcgmebK7nx0UCZg3me6Wrj7wHGm7fyEY3uRR1
+0Wlx5ktyGe6HFzx9PFkL1/N6tSNHyLwX8VOSHVkOsg4Cn8k6cJ2sx5e8nOSm
+EXI59HeXFUeWyMBkqDswLROl7QYcXXfCBgczZ4Ck5V3ywWXqBuTKDybbX1M3
+YlzvimxNUDfi2edgVKldy7oJrZPi0Rk1s9uEhqHHE4cbqJvxj0PUzZAuqKxd
+r6hbkD1nTrgmqFvQJjSND6xQr0C8zVPQqFzHegWqE/7mQzpmzoqmCvcJURN1
+K4oymnX7r1C3IX6223vOS90Gf5W1v+wFdTv44YfXMnjqdgizVGeKhevxB23l
+0ug=
+     "]]}, {}},
+  AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+  Axes->True,
+  AxesOrigin->{1., 0.},
+  Frame->True,
+  FrameLabel->{{
+     FormBox[
+     "\"\\!\\(\\*Cell[TextData[Cell[BoxData[\\nFormBox[\\n\\n  RowBox[{\\\"\
+\[LeftAngleBracket]\\\", \\n\\n   RowBox[{\\n\\n    SubsuperscriptBox[\\\"n\\\
+\", \\\"i\\\", \\\"out\\\"], \\\"(\\\", \\\"t\\\", \\\")\\\"}], \\\"\
+\[RightAngleBracket]\\\"}], \\n  TraditionalForm]]]]]\\)\"", TraditionalForm],
+      None}, {
+     FormBox["\"t (dump period of PIMAIM)\"", TraditionalForm], None}},
+  Method->{},
+  PlotRangeClipping->True]], "Output",
+ CellChangeTimes->{3.585033453966017*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Module", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"rangemin", "=", "0"}], ",", 
+     RowBox[{"rangemax", "=", "50"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"ListPlot", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"Monitor", "[", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"#", ",", 
+           RowBox[{"cageoutCF", "[", "#", "]"}]}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Row", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"ProgressIndicator", "[", 
+              RowBox[{
+               RowBox[{"Dynamic", "[", "#", "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"rangemin", ",", "rangemax"}], "}"}]}], "]"}], ",", 
+             "#"}], "}"}], ",", "\"\< /\>\""}], "]"}]}], 
+        "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]", "&"}], "/@", 
+      RowBox[{"Range", "[", 
+       RowBox[{"rangemin", ",", "rangemax"}], "]"}]}], "\[IndentingNewLine]", 
+     ",", 
+     RowBox[{"PlotStyle", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"Black", ",", 
+        RowBox[{"PointSize", "[", "0.02", "]"}]}], "}"}]}], ",", 
+     RowBox[{"PlotRange", "\[Rule]", "All"}], ",", 
+     RowBox[{"Frame", "\[Rule]", "True"}], ",", 
+     RowBox[{"FrameLabel", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<t (dump period of PIMAIM)\>\"", ",", 
+        "\"\<\!\(\*Cell[TextData[Cell[BoxData[
+FormBox[
+SubsuperscriptBox[
+RowBox[{\"C\", \" \"}], \"cage\", \"out\"], TraditionalForm]]]]]\)\>\""}], 
+       "}"}]}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.584959769633403*^9, 3.5849598414049473`*^9}, 
+   3.584959873290106*^9, {3.5849599178224907`*^9, 3.58495996326059*^9}, {
+   3.584960582414042*^9, 3.584960591031043*^9}, {3.58496063345089*^9, 
+   3.584960746594062*^9}, {3.584967332173397*^9, 3.5849673321734962`*^9}, 
+   3.584981938680373*^9, {3.584986283788309*^9, 3.584986284683622*^9}, 
+   3.584986539936277*^9, {3.5850307543710213`*^9, 3.585030754449114*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {GrayLevel[0], PointSize[0.02], PointBox[CompressedData["
+1:eJxVyVtIE3AYxuF10AKxDAzKNXagaW01TJ3OVu2duqlFSxYOOlgiyCrNRqeL
+ohwRToUObGpNCzdEo5OyIskMumiFRq5MLbfpci2SXAeVKLWLVfD9L/rg4+Xh
+Jyw5oi+dz+FwUv/+v/3/JlVsRXML/aO2T2QOYpIOxxZWfCQvxouonP3NBSFy
+HAztSy7X3/5AjodJt0Oj8ATJK+A1z1ReSGZehYuHTL6XT8bIApyRGKuMscwi
+7K60NlnuvyevxrGaoPppT4CciJ7AQZ44jnkNur92+iu6R8kSeLZHnJzzI+R1
+UDqSthncfrIMIV+XXBzykZORsOfm8ecG5g3guOaF9wW85BRIu+5ZpVLmVJSO
+t6wXlwyT0+AMxz/SOd+R5VAcCP/oTWNOhyXJFLTymDNQzt/F9ee+JStwrU1m
+tbuHyJlIqRfuXJnCvBHTMvszR2SQrITeHl00+515E040+munlcybUettXnpD
+yLwFiR3c4oaHA2QViuceX+KVMQOKloLo0QyyGdCJYn49iGJdjaKjveIre99Q
+V2O4SdBgi/RTz0JrnX7r2layOQvnbJMT8lOsZ2NZeeHE70zWs9F+UsJN//ya
+eg4StD87u9xkcw4iUtUt1xjrGlxdlGwYLGNdg2axusOYz7oWX4Ycy0/LWdei
+mn92Jmh5RT0XrraBEUMd2ZyLKae+5k4V63loXDAult/1UM+Dqudb9ZStj3o+
+BNdn++38PtUfXaDrfA==
+     "]]}, {}},
+  AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+  Axes->True,
+  AxesOrigin->{0., 0.22752688172043012`},
+  Frame->True,
+  FrameLabel->{{
+     FormBox[
+     "\"\\!\\(\\*Cell[TextData[Cell[BoxData[\\nFormBox[\\n\\n  \
+SubsuperscriptBox[\\nRowBox[{\\\"C\\\", \\\" \\\"}], \\\"cage\\\", \
+\\\"out\\\"], \\n  TraditionalForm]]]]]\\)\"", TraditionalForm], None}, {
+     FormBox["\"t (dump period of PIMAIM)\"", TraditionalForm], None}},
+  Method->{},
+  PlotRangeClipping->True]], "Output",
+ CellChangeTimes->{{3.5849597786531897`*^9, 3.584959809157045*^9}, 
+   3.584959859466001*^9, 3.5849599940693073`*^9, 3.584960118150772*^9, 
+   3.584960261319502*^9, 3.584960595595923*^9, 3.584960750317422*^9, 
+   3.584961004698915*^9, 3.58496734671319*^9, 3.5849865466234703`*^9, 
+   3.585030714099497*^9, 3.585030758808628*^9, 3.585033457291999*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1531, 874},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+ShowSelection->True,
+FrontEndVersion->"9.0 for Linux x86 (64-bit) (February 7, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 274, 5, 80, "Section"],
+Cell[856, 29, 2214, 62, 187, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3107, 96, 173, 2, 80, "Section"],
+Cell[3283, 100, 3529, 77, 216, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6849, 182, 137, 1, 80, "Section"],
+Cell[6989, 185, 3468, 80, 187, "Input"],
+Cell[CellGroupData[{
+Cell[10482, 269, 2135, 44, 81, "Input"],
+Cell[12620, 315, 1285, 26, 247, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13954, 347, 2275, 76, 382, "Section"],
+Cell[16232, 425, 2399, 60, 121, "Input"],
+Cell[CellGroupData[{
+Cell[18656, 489, 2199, 52, 196, "Input"],
+Cell[20858, 543, 1480, 31, 249, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22375, 579, 2152, 52, 242, "Input"],
+Cell[24530, 633, 1711, 33, 249, "Output"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
